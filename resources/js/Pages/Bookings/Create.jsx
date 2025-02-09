@@ -1,177 +1,136 @@
 import React from 'react';
 import { Head, useForm } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 
 export default function Create({ rooms }) {
     const { data, setData, post, processing, errors } = useForm({
-        customer_name: '', //ชื่อลูกค้า
-        customer_phone: '', //เบอร์โทรลูกค้า
-        customer_email: '', //อีเมลลูกค้า
-        customer_address: '', //ที่อยู่ลูกค้า
-        customer_id_card_number: '', //เลขบัตรประชาชน
-        room_id: '', //รหัสห้อง
-        check_in_date: '', //วันที่เช็คอิน
-        check_out_date: '' //วันที่เช็คเอาท์
-
+        customer_name: '',
+        customer_phone: '',
+        customer_email: '',
+        customer_address: '',
+        customer_id_card_number: '',
+        room_id: '',
+        check_in_date: '',
+        check_out_date: ''
     });
 
-    const handleSubmit = (e) => { //ฟังก์ชันส่งข้อมูลไปยัง API
-        e.preventDefault(); //ป้องกันการส่งข้อมูลไปยัง API
-        post(route('bookings.store')); //ส่งข้อมูลไปยัง API
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post(route('bookings.store'));
     };
-
-
 
     return (
         <>
             <Head title="สร้างการจองใหม่" />
 
-            <div className="container mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-4">สร้างการจองใหม่</h1>
+            <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
 
-                <form onSubmit={handleSubmit} className="max-w-lg bg-white p-6 rounded-lg shadow">
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            ชื่อลูกค้า
-                        </label>
-                        <input
-                            type="text"
-                            value={data.customer_name}
-                            onChange={e => setData('customer_name', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                            placeholder="ระบุชื่อลูกค้า"
-                        />
-                        {errors.customer_name && (
-                            <div className="text-red-500 text-sm mt-1">{errors.customer_name}</div>
-                        )}
-                    </div>
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            เบอร์โทรศัพท์
-                        </label>
-                        <input
-                            type="tel"
-                            value={data.customer_phone}
-                            onChange={e => setData('customer_phone', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                            placeholder="ระบุเบอร์โทรศัพท์"
-                        />
-                        {errors.customer_phone && (
-                            <div className="text-red-500 text-sm mt-1">{errors.customer_phone}</div>
-                        )}
-                    </div>
+                <div className="w-full max-w-2xl bg-white p-8 rounded-2xl shadow-lg">
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            อีเมล
-                        </label>
-                        <input
-                            type="email"
-                            value={data.customer_email}
-                            onChange={e => setData('customer_email', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                            placeholder="ระบุอีเมล"
-                        />
-                        {errors.customer_email && (
-                            <div className="text-red-500 text-sm mt-1">{errors.customer_email}</div>
-                        )}
-                    </div>
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            ที่อยู่
-                        </label>
-                        <textarea
-                            value={data.customer_address}
-                            onChange={e => setData('customer_address', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                            placeholder="ระบุที่อยู่"
-                            rows="3"
-                        />
-                        {errors.customer_address && (
-                            <div className="text-red-500 text-sm mt-1">{errors.customer_address}</div>
-                        )}
-                    </div>
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            เลขบัตรประชาชน
-                        </label>
-                        <input
-                            type="text"
-                            value={data.customer_id_card_number}
-                            onChange={e => setData('customer_id_card_number', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                            placeholder="ระบุเลขบัตรประชาชน"
-                        />
-                        {errors.customer_id_card_number && (
-                            <div className="text-red-500 text-sm mt-1">{errors.customer_id_card_number}</div>
-                        )}
-                    </div>
+                    {/* หัวข้อ */}
+                    <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+                        🏨 สร้างการจองใหม่
+                    </h1>
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            ห้องพัก
-                        </label>
-                        <select
-                            value={data.room_id}
-                            onChange={e => setData('room_id', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                        >
-                            <option value="">เลือกห้อง</option>
-                            {rooms.map(room => (
-                                <option key={room.id} value={room.id}>
-                                    {room.number} - {room.type} (฿{room.price.toLocaleString()}/คืน)
-                                </option>
-                            ))}
-                        </select>
-                        {errors.room_id && (
-                            <div className="text-red-500 text-sm mt-1">{errors.room_id}</div>
-                        )}
-                    </div>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* ช่องกรอกข้อมูล */}
+                        {[
+                            { label: 'ชื่อลูกค้า', type: 'text', key: 'customer_name' },
+                            { label: 'เบอร์โทรศัพท์', type: 'tel', key: 'customer_phone' },
+                            { label: 'อีเมล', type: 'email', key: 'customer_email' },
+                            { label: 'ที่อยู่', type: 'textarea', key: 'customer_address' },
+                            { label: 'เลขบัตรประชาชน', type: 'text', key: 'customer_id_card_number' }
+                        ].map(({ label, type, key }) => (
+                            <div key={key}>
+                                <label className="block text-gray-700 font-semibold">{label}</label>
+                                {type === 'textarea' ? (
+                                    <textarea
+                                        value={data[key]}
+                                        onChange={e => setData(key, e.target.value)}
+                                        className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400"
+                                        placeholder={`ระบุ${label}`}
+                                        rows="3"
+                                    />
+                                ) : (
+                                    <input
+                                        type={type}
+                                        value={data[key]}
+                                        onChange={e => setData(key, e.target.value)}
+                                        className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400"
+                                        placeholder={`ระบุ${label}`}
+                                    />
+                                )}
+                                {errors[key] && <p className="text-red-500 text-sm">{errors[key]}</p>}
+                            </div>
+                        ))}
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            วันที่เช็คอิน
-                        </label>
-                        <input
-                            type="date"
-                            value={data.check_in_date}
-                            onChange={e => setData('check_in_date', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                            min={new Date().toISOString().split('T')[0]}
-                        />
-                        {errors.check_in_date && (
-                            <div className="text-red-500 text-sm mt-1">{errors.check_in_date}</div>
-                        )}
-                    </div>
+                        {/* เลือกห้องพัก */}
+                        <div>
+                            <label className="block text-gray-700 font-semibold">ห้องพัก</label>
+                            <select
+                                value={data.room_id}
+                                onChange={e => setData('room_id', e.target.value)}
+                                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400"
+                            >
+                                <option value="">เลือกห้อง</option>
+                                {rooms.map(room => (
+                                    <option key={room.id} value={room.id}>
+                                        {room.number} - {room.type} (฿{room.price.toLocaleString()}/คืน)
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.room_id && <p className="text-red-500 text-sm">{errors.room_id}</p>}
+                        </div>
 
-                    <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            วันที่เช็คเอาท์
-                        </label>
-                        <input
-                            type="date"
-                            value={data.check_out_date}
-                            onChange={e => setData('check_out_date', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                            min={data.check_in_date}
-                        />
-                        {errors.check_out_date && (
-                            <div className="text-red-500 text-sm mt-1">{errors.check_out_date}</div>
-                        )}
-                    </div>
+                        {/* วันที่เช็คอิน / เช็คเอาท์ */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-gray-700 font-semibold">วันที่เช็คอิน</label>
+                                <input
+                                    type="date"
+                                    value={data.check_in_date}
+                                    onChange={e => setData('check_in_date', e.target.value)}
+                                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400"
+                                    min={new Date().toISOString().split('T')[0]}
+                                />
+                                {errors.check_in_date && <p className="text-red-500 text-sm">{errors.check_in_date}</p>}
+                            </div>
 
-                    <div className="flex justify-end">
-                        <button
-                            type="submit"
-                            disabled={processing}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-                        >
-                            บันทึกการจอง
-                        </button>
-                    </div>
-                </form>
+                            <div>
+                                <label className="block text-gray-700 font-semibold">วันที่เช็คเอาท์</label>
+                                <input
+                                    type="date"
+                                    value={data.check_out_date}
+                                    onChange={e => setData('check_out_date', e.target.value)}
+                                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400"
+                                    min={data.check_in_date}
+                                />
+                                {errors.check_out_date && <p className="text-red-500 text-sm">{errors.check_out_date}</p>}
+                            </div>
+                        </div>
+
+                        {/* ปุ่มบันทึกและกลับ */}
+                        <div className="flex gap-4">
+                            <Link
+                                href={route('bookings.index')}
+                                className="w-1/2 bg-gray-500 text-white py-3 rounded-lg font-semibold text-lg hover:bg-gray-600 transition duration-200 text-center shadow-md"
+                            >
+                                ⬅ กลับไปหน้าการจอง
+                            </Link>
+
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="w-1/2 bg-blue-500 text-white py-3 rounded-lg font-semibold text-lg hover:bg-blue-600 transition duration-200 shadow-md"
+                            >
+                                {processing ? "กำลังบันทึก..." : "บันทึกการจอง"}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </>
     );
