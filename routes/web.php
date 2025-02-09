@@ -56,8 +56,14 @@ Route::post('/employee', [EmployeeController::class, 'store'])->name('employee.s
 Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
 Route::resource('employees', EmployeeController::class);
 
-Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
-Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
+Route::controller(BookingController::class)->group(function () {
+    Route::get('/bookings', 'index')->name('bookings.index');
+    Route::get('/bookings/create', 'create')->name('bookings.create');
+    Route::post('/bookings', 'store')->name('bookings.store');
+    Route::put('/bookings/{booking}', 'update')->name('bookings.update');
+    Route::delete('/bookings/{booking}', 'destroy')->name('bookings.destroy');
+    Route::get('/bookings/{booking}', 'show')->name('bookings.show');
+});
 
 Route::resource('customers', CustomerController::class);
 Route::resource('rooms', RoomController::class);
@@ -74,6 +80,5 @@ Route::get('/registration', [RegistrationController::class, 'index'])->name('reg
 Route::get('/registration/stats', [RegistrationController::class, 'stats'])->name('registration.stats');
 
 Route::get('/reg', [RegistrationController::class, 'index'])->name('reg.index');
-Route::resource('registrations', RegistrationController::class);
 
 require __DIR__.'/auth.php';
