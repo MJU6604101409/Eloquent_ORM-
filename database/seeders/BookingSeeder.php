@@ -15,49 +15,60 @@ class BookingSeeder extends Seeder
      */
     public function run(): void
     {
-        // สร้างข้อมูลลูกค้า
-        for ($i = 0; $i < 4; $i++) {
-            RoomType::create([
-                'name' => fake()->unique()->randomElement(['Standard Room', 'Deluxe Room', 'Family Suite', 'Presidential Suite']),
+        // สร้าง RoomTypes 4 ประเภท
+        $roomTypes = collect(['Standard Room', 'Deluxe Room', 'Family Suite', 'Presidential Suite']);
+        $roomTypeIds = [];
+
+        foreach ($roomTypes as $i => $type) {
+            $roomType = RoomType::create([
+                'name' => $type,
                 'description' => fake()->paragraph(),
                 'price_per_night' => fake()->randomElement([1000, 2000, 3500, 5000]),
                 'capacity' => fake()->randomElement([2, 4]),
                 'prefix' => chr(65 + $i) // A, B, C, D
             ]);
+            $roomTypeIds[] = $roomType->id;
         }
 
-        // สร้างห้องพัก
-        RoomType::all()->each(function ($roomType) {
-            $numberOfRooms = fake()->randomElement([6, 12]);
-
-            for ($floor = 1; $floor <= 4; $floor++) {
-                for ($room = 1; $room <= ($numberOfRooms / 4); $room++) {
-                    Room::create([
-                        'room_type_id' => $roomType->id,
-                        'room_number' => $roomType->prefix . $floor . str_pad($room, 2, '0', STR_PAD_LEFT),
-                        'floor' => $floor,
-                        'is_available' => fake()->boolean()
-                    ]);
-                }
+        // สร้างห้องพัก 20 ห้อง (5 ห้องต่อประเภท)
+        $rooms = [];
+        foreach ($roomTypeIds as $index => $roomTypeId) {
+            $roomType = RoomType::find($roomTypeId); // ดึงข้อมูล RoomType เพื่อใช้ prefix
+            for ($i = 1; $i <= 5; $i++) {
+                $rooms[] = Room::create([
+                    'room_type_id' => $roomTypeId,
+                    'room_number' => $roomType->prefix . str_pad($i, 3, '0', STR_PAD_LEFT), // A001, A002, ...
+                    'floor' => fake()->numberBetween(1, 5),
+                    'is_available' => fake()->boolean(),
+                ]);
             }
-        });
+        }
 
-        // สร้างการจอง
-        $rooms = Room::where('is_available', false)->get();
+        // สร้างลูกค้า 100 คน
+        Customer::factory()->count(100)->create();
+
+        // ดึงข้อมูลห้องและลูกค้า
         $customers = Customer::all();
 
-        foreach ($rooms as $room) {
+        // สร้างการจอง 100 รายการ
+        $bookings = [];
+        for ($i = 0; $i < 100; $i++) {
+            $room = fake()->randomElement($rooms);
             $checkIn = fake()->dateTimeBetween('-3 days', '+1 week');
             $checkOut = fake()->dateTimeBetween($checkIn, '+2 weeks');
 
-            Booking::create([
+            $bookings[] = [
                 'customer_id' => $customers->random()->id,
                 'room_id' => $room->id,
                 'check_in_date' => $checkIn,
                 'check_out_date' => $checkOut,
                 'total_price' => $room->roomType->price_per_night * fake()->numberBetween(1, 5),
-                'status' => fake()->randomElement(['confirmed', 'checked_in', 'checked_out'])
-            ]);
+                'status' => fake()->randomElement(['confirmed', 'checked_in', 'checked_out']),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
         }
+
+        Booking::insert($bookings); // ใช้ insert() เพื่อให้เร็วขึ้น
     }
 }
