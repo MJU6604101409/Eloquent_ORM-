@@ -79,23 +79,38 @@ class BookingController extends Controller
     // 3. สร้างการจอง
     public function create()
     {
-        // ดึงข้อมูลห้องที่ว่างทั้งหมด
+        // ดึงข้อมูลห้องทั้งหมด พร้อมกับเช็กการจอง
         $rooms = Room::with('roomType')
-            ->where('is_available', true) // ห้องว่าง
             ->get()
             ->map(function ($room) {
+                // ค้นหาการจองของห้องนี้
+                $bookings = Booking::where('room_id', $room->id)
+                    ->where('check_out_date', '>=', now()) // เฉพาะการจองที่ยังไม่หมดเวลา
+                    ->get()
+                    ->map(function ($booking) {
+                        return [
+                            'check_in' => $booking->check_in_date,
+                            'check_out' => $booking->check_out_date
+                        ];
+                    });
+
                 return [
-                    'id' => $room->id, // รหัสห้อง
-                    'number' => $room->room_number, // เลขห้อง
-                    'type' => $room->roomType->name, // ประเภทห้อง
-                    'price' => $room->roomType->price_per_night // ราคาห้อง
+                    'id' => $room->id,
+                    'number' => $room->room_number,
+                    'type' => $room->roomType->name,
+                    'price' => $room->roomType->price_per_night,
+                    'is_available' => (bool) $room->is_available,
+                    'bookings' => $bookings // ✅ ส่งข้อมูลการจองของห้องไปด้วย
                 ];
             });
 
         return Inertia::render('Bookings/Create', [
-            'rooms' => $rooms // ข้อมูลห้อง
+            'rooms' => $rooms
         ]);
     }
+
+
+
 
     // 4. บันทึกการจองใหม่
     public function store(Request $request)
